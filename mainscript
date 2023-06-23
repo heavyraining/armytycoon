@@ -1,0 +1,213 @@
+-- / GAME LINK: https://www.roblox.com/games/4325400580/Army-Tycoon
+
+
+-- START OF VITALS --
+local Library = loadstring(game:HttpGet("https://raw.githubusercontent.com/xHeptc/Kavo-UI-Library/main/source.lua"))()
+local Window = Library.CreateLib("Army Tycoon - ORGANIZED", colors)
+local colors = {
+    SchemeColor = Color3.fromRGB(0,255,255),
+    Background = Color3.fromRGB(0, 0, 0),
+    Header = Color3.fromRGB(0, 0, 0),
+    TextColor = Color3.fromRGB(255,255,255),
+    ElementColor = Color3.fromRGB(20, 20, 20)
+}
+local mouse = game:service'Players'.LocalPlayer:GetMouse()
+-- END OF VITALS --
+
+-- START OF TABS --
+local TabBombing = Window:NewTab("Bombing")
+local TabBuilding = Window:NewTab("Building")
+local TabMisc = Window:NewTab("Miscellaneous")
+local TabUI = Window:NewTab("UI Settings")
+local TabCredits = Window:NewTab("Credits")
+
+-- END OF TABS --
+
+-- START OF SECTIONS --
+local SectionUIKeybind = TabUI:NewSection("Hide / Show UI Keybind")
+
+local SectionCredits = TabCredits:NewSection("Credits")
+
+local SectionMiscUnitSkin = TabMisc:NewSection("Skins")
+local SectionMiscCapturing = TabMisc:NewSection("Outposts")
+local SectionMiscFlag = TabMisc:NewSection("Custom Flag ID")
+local SectionMiscKilling = TabMisc:NewSection("Unit Killing")
+
+local SectionBuildingSelf = TabBuilding:NewSection("Self-build")
+local SectionBuilding = TabBuilding:NewSection("Building")
+local SectionBuildingSpecific = TabBuilding:NewSection("Other Player Building")
+
+local SectionBombingConfig = TabBombing:NewSection("Configuration (DEFAULT IS Q)")
+local SectionBombingToggles = TabBombing:NewSection("Toggles")
+local SectionBombingMisc = TabBombing:NewSection("Miscellaneous")
+
+-- END OF SECTIONS --
+
+-- START OF VARIABLES --
+local keybind = "q"
+
+local artillery_barrage = false
+local bomb_airstrike = false
+local cruise_missile = false
+local heavy_artillery = false
+local light_artillery = false
+local napalm_airstrike = false
+local nuke = false
+
+-- END OF VARIABLES --
+
+-- START OF OPTIONS --
+SectionUIKeybind:NewKeybind("Change UI Keybind", "The default UI Keybind is Z.", Enum.KeyCode.Z, function()
+	Library:ToggleUI()
+end)
+
+SectionCredits:NewLabel("therapisttt on Discord - UI, some coding.")
+SectionCredits:NewLabel("BlueRasberry - Most of the coding.")
+SectionCredits:NewLabel("Xiu - Lag Players Script.")
+
+SectionMiscUnitSkin:NewDropdown("Change Unit Skin", "Changes your unit skin to your desired option.", {"Default", "Black", "Desert"}, function(currentOption)
+	game:GetService("ReplicatedStorage").RE.changeSkins:FireServer(currentOption)
+end)
+
+SectionMiscCapturing:NewButton("Capture All Outposts", "Starts capturing all bases.", function()
+    for i,v in pairs(game.Workspace.Game.Base.Interactives:GetChildren()) do
+		game:GetService("ReplicatedStorage").RE.StartCapturing:FireServer(v, true)
+	end
+end)
+
+SectionBuildingSelf:NewButton("Give Self All Buildings", "Gives you all the in-game buildings.", function()
+    loadstring(game:HttpGet("https://pastebin.com/raw/rVrEFdtC"))()
+end)
+
+SectionBuilding:NewButton("Give Everyone All Buildings", "Gives everyone all the in-game buildings.", function()
+    loadstring(game:HttpGet("https://pastebin.com/raw/wMDh7RcS"))()
+end)
+
+SectionMiscFlag:NewTextBox("Custom Flag", "Insert an ID to put your own flag.", function(txt)
+    local args = {
+        [1] = "http://www.roblox.com/asset/?id=" .. txt
+    }
+
+    game:GetService("ReplicatedStorage").RE.setFlag:FireServer(unpack(args))
+    
+    game.Players.LocalPlayer.PlayerGui.FlagMenu.Enabled = false
+end)
+
+SectionMiscKilling:NewButton("Kill All Units", "Kills every unit but your own.", function()
+    for i, v in pairs(game.Workspace.Game.Units:GetChildren()) do
+        if v.Name == game.Players.LocalPlayer.Name then
+            -- Skip the current player's unit
+        else
+            for i, v2 in pairs(v:GetChildren()) do
+                local Missile = "Cruise Missile"
+                local Position = v2.Torso.Position
+                game:GetService("ReplicatedStorage").RE.FireMissile:FireServer(Missile, Position)
+            end
+        end
+    end
+end)
+
+-- END OF OPTIONS --
+
+-- START OF BOMBING CODE --
+SectionBombingToggles:NewToggle("Keybinded Nuke", "Toggles if a nuke is fired on keybind.", function(state)
+    if state then
+        nuke = true
+    else
+        nuke = false
+    end
+end)
+
+SectionBombingToggles:NewToggle("Keybinded Barrage", "Toggles if a barrage is fired on keybind.", function(state)
+    if state then
+        artillery_barrage = true
+    else
+        artillery_barrage = false
+    end
+end)
+
+SectionBombingToggles:NewToggle("Keybinded Bomb Airstrike", "Toggles if a bomb airstrike is fired on keybind.", function(state)
+    if state then
+        bomb_airstrike = true
+    else
+        bomb_airstrike = false
+    end
+end)
+
+SectionBombingToggles:NewToggle("Keybinded Cruise Missile", "Toggles if a cruise missile is fired on keybind.", function(state)
+    if state then
+        cruise_missile = true
+    else
+        cruise_missile = false
+    end
+end)
+
+SectionBombingToggles:NewToggle("Keybinded Heavy Artillery", "Toggles if heavy artillery is fired on keybind.", function(state)
+    if state then
+        heavy_artillery = true
+    else
+        heavy_artillery = false
+    end
+end)
+
+SectionBombingToggles:NewToggle("Keybinded Light Artillery", "Toggles if light artillery is fired on keybind.", function(state)
+    if state then
+        light_artillery = true
+    else
+        light_artillery = false
+    end
+end)
+
+SectionBombingToggles:NewToggle("Keybinded Napalm Airstrike", "Toggles if a napalm airstrike is fired on keybind.", function(state)
+    if state then
+        napalm_airstrike = true
+    else
+        napalm_airstrike = false
+    end
+end)
+
+mouse.KeyDown:Connect(function(k)
+    if k == keybind and nuke == true then
+        game:GetService("ReplicatedStorage").RE.FireMissile:FireServer("Nuke", Vector3.new(mouse.Hit.Position.X, mouse.Hit.Position.Y, mouse.Hit.Position.Z))
+    end
+end)
+
+mouse.KeyDown:Connect(function(k)
+    if k == keybind and artillery_barrage == true then
+        game:GetService("ReplicatedStorage").RE.FireMissile:FireServer("Artillery Barrage", Vector3.new(mouse.Hit.Position.X, mouse.Hit.Position.Y, mouse.Hit.Position.Z))
+    end
+end)
+
+mouse.KeyDown:Connect(function(k)
+    if k == keybind and bomb_airstrike == true then
+        game:GetService("ReplicatedStorage").RE.FireMissile:FireServer("Bomb Airstrike", Vector3.new(mouse.Hit.Position.X, mouse.Hit.Position.Y, mouse.Hit.Position.Z))
+    end
+end)
+
+mouse.KeyDown:Connect(function(k)
+    if k == keybind and cruise_missile == true then
+        game:GetService("ReplicatedStorage").RE.FireMissile:FireServer("Cruise Missile", Vector3.new(mouse.Hit.Position.X, mouse.Hit.Position.Y, mouse.Hit.Position.Z))
+    end
+end)
+
+mouse.KeyDown:Connect(function(k)
+    if k == keybind and heavy_artillery == true then
+        game:GetService("ReplicatedStorage").RE.FireMissile:FireServer("Heavy Artillery", Vector3.new(mouse.Hit.Position.X, mouse.Hit.Position.Y, mouse.Hit.Position.Z))
+    end
+end)
+
+mouse.KeyDown:Connect(function(k)
+    if k == keybind and light_artillery == true then
+        game:GetService("ReplicatedStorage").RE.FireMissile:FireServer("Light Artillery", Vector3.new(mouse.Hit.Position.X, mouse.Hit.Position.Y, mouse.Hit.Position.Z))
+    end
+end)
+
+mouse.KeyDown:Connect(function(k)
+    if k == keybind and napalm_airstrike == true then
+        game:GetService("ReplicatedStorage").RE.FireMissile:FireServer("Light Artillery", Vector3.new(mouse.Hit.Position.X, mouse.Hit.Position.Y, mouse.Hit.Position.Z))
+    end
+end)
+
+SectionBombingConfig:NewTextBox("Change Airstrike Keybind", "Changes keybind to fire selected airstrikes.", function(txt)
+    keybind = txt
+end)
